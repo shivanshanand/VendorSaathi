@@ -14,6 +14,7 @@ import Chatbot from "./pages/Chatbot";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import { isAuthenticated, getCurrentUser } from "./utils/auth";
+import Navbar from "./components/Navbar";
 
 function ProtectedRoute({ children }) {
   const isAuthed = isAuthenticated();
@@ -78,103 +79,57 @@ function App() {
     window.location.href = "/auth";
   };
 
-  const handleRoleChange = () => {
-    setUser(getCurrentUser());
-  };
-
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 font-sans">
-        <header className="bg-orange-600 text-white py-4 shadow-md">
-          <div className="container mx-auto flex justify-between items-center px-4">
-            <Link to="/" className="text-2xl font-bold tracking-wide">
-              VendorSaathi
-            </Link>
-            <nav className="space-x-4 flex items-center">
-              {!user && (
-                <Link to="/auth" className="hover:underline">
-                  Login/Register
-                </Link>
-              )}
-              {user && (
-                <>
-                  <Link to="/dashboard" className="hover:underline">
-                    Dashboard
-                  </Link>
-                  {user.role === "supplier" && (
-                    <Link to="/supplier" className="hover:underline">
-                      Supplier Page
-                    </Link>
-                  )}
-                  {user.role === "vendor" && (
-                    <Link to="/vendor" className="hover:underline">
-                      Vendor Page
-                    </Link>
-                  )}
-                  <Link to="/chatbot" className="hover:underline">
-                    Chatbot
-                  </Link>
-                  <Link to="/profile" className="hover:underline">
-                    Profile
-                  </Link>
-                </>
-              )}
-              {/* ProfileMenu removed. Profile page will handle logout. */}
-            </nav>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 py-8">
-          <Routes>
-            <Route
-              path="/auth"
-              element={user ? <Navigate to="/dashboard" replace /> : <Auth />}
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile onLogout={handleLogout} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/supplier"
-              element={
-                <RoleRoute role="supplier">
-                  <Supplier />
-                </RoleRoute>
-              }
-            />
-            <Route
-              path="/vendor"
-              element={
-                <RoleRoute role="vendor">
-                  <Vendor />
-                </RoleRoute>
-              }
-            />
-            <Route
-              path="/chatbot"
-              element={
-                <ProtectedRoute>
-                  <Chatbot />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </main>
-        <footer className="text-center py-4 text-gray-500 text-sm">
-          © {new Date().getFullYear()} VendorSaathi
-        </footer>
+        <Navbar user={user} />
+        <Routes>
+          <Route
+            path="/auth"
+            element={user ? <Navigate to="/dashboard" replace /> : <Auth />}
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supplier"
+            element={
+              <RoleRoute role="supplier">
+                <Supplier />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/vendor"
+            element={
+              <RoleRoute role="vendor">
+                <Vendor />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/chatbot"
+            element={
+              <ProtectedRoute>
+                <Chatbot />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<Home />} />
+        </Routes>
       </div>
     </Router>
   );
