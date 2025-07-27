@@ -1,7 +1,7 @@
 import React from "react";
 import { getCurrentUser } from "../utils/auth";
 
-const Profile = () => {
+const Profile = ({ onLogout }) => {
   const user = getCurrentUser();
 
   const renderVendorDetails = () => (
@@ -115,8 +115,14 @@ const Profile = () => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Header */}
-          <div className="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-500">
+          <div className="px-6 py-4 bg-gradient-to-r from-orange-600 to-orange-500 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Profile</h1>
+            <button
+              onClick={onLogout}
+              className="bg-white text-orange-600 font-semibold px-4 py-2 rounded shadow hover:bg-orange-100 transition"
+            >
+              Logout
+            </button>
           </div>
 
           {/* Profile Picture and Role */}

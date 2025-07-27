@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { t } from "../utils/i18n";
 import axios from 'axios';
 
 const API_URL = "http://localhost:5000/api/auth";
@@ -41,12 +40,12 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 mb-8 space-y-4">
-      <div className="font-bold text-xl mb-2 text-orange-700">{t("login")}</div>
-      <div className="text-gray-600 mb-4">{t("enterLoginInfo")}</div>
+      <div className="font-bold text-xl mb-2 text-orange-700">Login</div>
+      <div className="text-gray-600 mb-4">Enter your login information</div>
       <input
         type="email"
         name="email"
-        placeholder={t("email")}
+        placeholder="Email"
         value={form.email || ""}
         onChange={handleChange}
         className="w-full border rounded px-3 py-2"
@@ -55,7 +54,7 @@ const Login = () => {
       <input
         type="password"
         name="password"
-        placeholder={t("password")}
+        placeholder="Password"
         value={form.password || ""}
         onChange={handleChange}
         className="w-full border rounded px-3 py-2"
@@ -67,7 +66,7 @@ const Login = () => {
         className="w-full bg-orange-600 text-white py-2 rounded font-semibold hover:opacity-90 transition disabled:opacity-60"
         disabled={loading}
       >
-        {loading ? t("loggingIn") + "..." : t("login")}
+        {loading ? "Logging in..." : "Login"}
       </button>
     </form>
   );

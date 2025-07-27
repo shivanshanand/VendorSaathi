@@ -11,7 +11,6 @@ import Dashboard from "./pages/Dashboard";
 import Supplier from "./pages/Supplier";
 import Vendor from "./pages/Vendor";
 import Chatbot from "./pages/Chatbot";
-import ProfileMenu from "./components/ProfileMenu";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import { isAuthenticated, getCurrentUser } from "./utils/auth";
@@ -120,12 +119,7 @@ function App() {
                   </Link>
                 </>
               )}
-              {user && (
-                <ProfileMenu
-                  onLogout={handleLogout}
-                  onRoleChange={handleRoleChange}
-                />
-              )}
+              {/* ProfileMenu removed. Profile page will handle logout. */}
             </nav>
           </div>
         </header>
@@ -139,7 +133,7 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <Profile />
+                  <Profile onLogout={handleLogout} />
                 </ProtectedRoute>
               }
             />

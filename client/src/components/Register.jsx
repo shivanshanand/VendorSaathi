@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { t } from "../utils/i18n";
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api";
@@ -12,17 +11,17 @@ const Register = ({ role }) => {
   const navigate = useNavigate();
 
   const vendorFields = [
-    { name: "name", label: t("yourName"), type: "text" },
+    { name: "name", label: "Your Name", type: "text" },
     { name: "email", label: "Email", type: "email" },
-    { name: "mobile", label: t("mobile"), type: "text" },
-    { name: "password", label: t("password"), type: "password" },
-    { name: "shopName", label: t("shopName"), type: "text" },
+    { name: "mobile", label: "Mobile", type: "text" },
+    { name: "password", label: "Password", type: "password" },
+    { name: "shopName", label: "Shop Name", type: "text" },
     {
       name: "whatSell",
-      label: t("whatSell"),
+      label: "What You Sell",
       type: "select",
       options: [
-        t("selectBusiness"),
+        "Select Business Type",
         "Fruits",
         "Vegetables",
         "Spices",
@@ -30,40 +29,40 @@ const Register = ({ role }) => {
         "Other",
       ],
     },
-    { name: "area", label: t("area"), type: "text" },
+    { name: "area", label: "Area", type: "text" },
     {
       name: "city",
-      label: t("city"),
+      label: "City",
       type: "select",
-      options: [t("selectCity"), "Mumbai", "Delhi", "Bangalore", "Other"],
+      options: ["Select City", "Mumbai", "Delhi", "Bangalore", "Other"],
     },
     {
       name: "years",
-      label: t("years"),
+      label: "Years in Business",
       type: "select",
-      options: [t("selectExperience"), "<1", "1-3", "3-5", ">5"],
+      options: ["Select Experience", "<1", "1-3", "3-5", ">5"],
     },
   ];
 
   const supplierFields = [
-    { name: "name", label: t("contactPerson"), type: "text" },
+    { name: "name", label: "Contact Person", type: "text" },
     { name: "email", label: "Email", type: "email" },
-    { name: "mobile", label: t("mobile"), type: "text" },
-    { name: "password", label: t("password"), type: "password" },
-    { name: "businessName", label: t("businessName"), type: "text" },
+    { name: "mobile", label: "Mobile", type: "text" },
+    { name: "password", label: "Password", type: "password" },
+    { name: "businessName", label: "Business Name", type: "text" },
     {
       name: "whatSupply",
-      label: t("whatSupply"),
+      label: "What You Supply",
       type: "select",
-      options: [t("selectCategory"), "Vegetables", "Spices", "Grains", "Other"],
+      options: ["Select Category", "Vegetables", "Spices", "Grains", "Other"],
     },
-    { name: "warehouse", label: t("warehouse"), type: "text" },
-    { name: "area", label: t("area"), type: "text" },
+    { name: "warehouse", label: "Warehouse", type: "text" },
+    { name: "area", label: "Area", type: "text" },
     {
       name: "city",
-      label: t("city"),
+      label: "City",
       type: "select",
-      options: [t("selectCity"), "Mumbai", "Delhi", "Bangalore", "Other"],
+      options: ["Select City", "Mumbai", "Delhi", "Bangalore", "Other"],
     },
   ];
 
@@ -108,9 +107,9 @@ const Register = ({ role }) => {
       className="flex-1 bg-white rounded-lg shadow p-6 mb-8 space-y-4"
     >
       <div className="font-bold text-xl mb-2 text-orange-700">
-        {role === "vendor" ? t("vendorReg") : t("supplierReg")}
+        {role === "vendor" ? "Vendor Registration" : "Supplier Registration"}
       </div>
-      <div className="text-gray-600 mb-4">{t("enterInfo")}</div>
+      <div className="text-gray-600 mb-4">Enter your details below</div>
       {fields.map((f) =>
         f.type === "select" ? (
           <select
@@ -124,14 +123,7 @@ const Register = ({ role }) => {
             {f.options.map((opt, i) => (
               <option
                 key={i}
-                value={
-                  opt === t("selectBusiness") ||
-                  opt === t("selectCategory") ||
-                  opt === t("selectCity") ||
-                  opt === t("selectExperience")
-                    ? ""
-                    : opt
-                }
+                value={i === 0 ? "" : opt}
                 disabled={i === 0}
               >
                 {opt}
@@ -160,10 +152,10 @@ const Register = ({ role }) => {
         disabled={loading}
       >
         {loading
-          ? t("registration") + "..."
+          ? "Registering..."
           : role === "vendor"
-          ? t("createVendor")
-          : t("createSupplier")}
+          ? "Create Vendor Account"
+          : "Create Supplier Account"}
       </button>
     </form>
   );
