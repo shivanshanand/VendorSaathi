@@ -1,10 +1,69 @@
 import React, { useState, useEffect } from "react";
 import { getCurrentUser } from "../utils/auth";
-import axios from "axios";
+import { motion } from "framer-motion";
+import MaterialBarChart from "../components/MaterialBarChart";
 
 const Supplier = () => {
-  const [materials, setMaterials] = useState([]);
-  const [groupBuys, setGroupBuys] = useState([]);
+  // Dummy data for demo
+  const [materials, setMaterials] = useState([
+    {
+      _id: "1",
+      name: "Potato",
+      category: "Vegetables",
+      price: 20,
+      unit: "kg",
+      minQuantity: 50,
+      available: true,
+    },
+    {
+      _id: "2",
+      name: "Chili Powder",
+      category: "Spices",
+      price: 120,
+      unit: "kg",
+      minQuantity: 10,
+      available: false,
+    },
+    {
+      _id: "3",
+      name: "Rice",
+      category: "Grains",
+      price: 45,
+      unit: "kg",
+      minQuantity: 100,
+      available: true,
+    },
+  ]);
+  const [groupBuys, setGroupBuys] = useState([
+    {
+      _id: "g1",
+      material: {
+        name: "Potato",
+        category: "Vegetables",
+        price: 20,
+        unit: "kg",
+      },
+      currentQuantity: 120,
+      targetQuantity: 200,
+      vendors: [1, 2, 3, 4],
+      deadline: Date.now() + 86400000,
+      status: "active",
+    },
+    {
+      _id: "g2",
+      material: {
+        name: "Rice",
+        category: "Grains",
+        price: 45,
+        unit: "kg",
+      },
+      currentQuantity: 60,
+      targetQuantity: 100,
+      vendors: [1, 2],
+      deadline: Date.now() + 172800000,
+      status: "pending",
+    },
+  ]);
   const [newMaterial, setNewMaterial] = useState({
     name: "",
     category: "",
@@ -15,65 +74,24 @@ const Supplier = () => {
   });
   const user = getCurrentUser();
 
-  useEffect(() => {
-    fetchMaterials();
-    fetchGroupBuys();
-  }, []);
-
-  const fetchMaterials = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/material/supplier",
-        {
-          withCredentials: true,
-        }
-      );
-      if (res.data) {
-        setMaterials(res.data);
-      }
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-    }
-  };
-
-  const fetchGroupBuys = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/groupbuy/supplier",
-        {
-          withCredentials: true,
-        }
-      );
-      if (res.data) {
-        setGroupBuys(res.data);
-      }
-    } catch (error) {
-      console.error("Error fetching group buys:", error);
-    }
-  };
-
-  const handleNewMaterialSubmit = async (e) => {
+  // Demo submit just adds to local state
+  const handleNewMaterialSubmit = (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/material",
-        newMaterial,
-        { withCredentials: true }
-      );
-      if (res.data) {
-        setNewMaterial({
-          name: "",
-          category: "",
-          price: "",
-          unit: "",
-          minQuantity: "",
-          available: true,
-        });
-        fetchMaterials();
-      }
-    } catch (error) {
-      console.error("Error adding material:", error);
-    }
+    setMaterials((prev) => [
+      {
+        _id: Math.random().toString(36).slice(2),
+        ...newMaterial,
+      },
+      ...prev,
+    ]);
+    setNewMaterial({
+      name: "",
+      category: "",
+      price: "",
+      unit: "",
+      minQuantity: "",
+      available: true,
+    });
   };
 
   const handleMaterialChange = (e) => {
@@ -84,10 +102,70 @@ const Supplier = () => {
     }));
   };
 
+  // Demo stats
+  const stats = [
+    {
+      label: "Total Materials",
+      value: materials.length,
+      color: "bg-orange-100 text-orange-700",
+    },
+    {
+      label: "Active Group Buys",
+      value: groupBuys.filter((g) => g.status === "active").length,
+      color: "bg-green-100 text-green-700",
+    },
+    {
+      label: "Pending Group Buys",
+      value: groupBuys.filter((g) => g.status === "pending").length,
+      color: "bg-yellow-100 text-yellow-700",
+    },
+    {
+      label: "Unavailable Materials",
+      value: materials.filter((m) => !m.available).length,
+      color: "bg-red-100 text-red-700",
+    },
+  ];
+
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-6">{"addNewMaterial"}</h2>
+    <motion.div
+      className="p-6"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Animated Stats */}
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <motion.div
+            key={stat.label}
+            className={`rounded-lg shadow p-6 flex flex-col items-center justify-center ${stat.color}`}
+            whileHover={{ scale: 1.08 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <span className="text-3xl font-bold mb-2">{stat.value}</span>
+            <span className="text-sm font-medium">{stat.label}</span>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Material Bar Chart (Recharts) */}
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <MaterialBarChart materials={materials} />
+      </motion.div>
+
+      {/* Add New Material */}
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold mb-6">Add New Material</h2>
         <form
           onSubmit={handleNewMaterialSubmit}
           className="bg-white rounded-lg shadow p-6 max-w-2xl"
@@ -95,7 +173,7 @@ const Supplier = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {"materialName"}
+                Material Name
               </label>
               <input
                 type="text"
@@ -108,7 +186,7 @@ const Supplier = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {"category"}
+                Category
               </label>
               <select
                 name="category"
@@ -117,16 +195,16 @@ const Supplier = () => {
                 className="w-full border rounded px-3 py-2"
                 required
               >
-                <option value="">{"selectCategory"}</option>
-                <option value="Vegetables">{"vegetables"}</option>
-                <option value="Spices">{"spices"}</option>
-                <option value="Grains">{"grains"}</option>
-                <option value="Other">{"other"}</option>
+                <option value="">Select Category</option>
+                <option value="Vegetables">Vegetables</option>
+                <option value="Spices">Spices</option>
+                <option value="Grains">Grains</option>
+                <option value="Other">Other</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {"pricePerUnit"}
+                Price Per Unit
               </label>
               <input
                 type="number"
@@ -139,7 +217,7 @@ const Supplier = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {"unit"}
+                Unit
               </label>
               <select
                 name="unit"
@@ -148,17 +226,17 @@ const Supplier = () => {
                 className="w-full border rounded px-3 py-2"
                 required
               >
-                <option value="">{"selectUnit"}</option>
+                <option value="">Select Unit</option>
                 <option value="kg">kg</option>
                 <option value="g">g</option>
                 <option value="l">l</option>
                 <option value="ml">ml</option>
-                <option value="units">{"units"}</option>
+                <option value="units">units</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {"minQuantity"}
+                Min Quantity
               </label>
               <input
                 type="number"
@@ -178,7 +256,7 @@ const Supplier = () => {
                 className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
               />
               <label className="ml-2 block text-sm text-gray-700">
-                {"available"}
+                Available
               </label>
             </div>
           </div>
@@ -186,38 +264,48 @@ const Supplier = () => {
             type="submit"
             className="mt-6 w-full bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-700 transition"
           >
-            {"addMaterial"}
+            Add Material
           </button>
         </form>
-      </div>
+      </motion.div>
 
       {/* Materials List */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-6">{"yourMaterials"}</h2>
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold mb-6">Your Materials</h2>
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {"material"}
+                  Material
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {"category"}
+                  Category
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {"price"}
+                  Price
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {"minQuantity"}
+                  Min Quantity
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {"status"}
+                  Status
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {materials.map((material) => (
-                <tr key={material._id}>
+                <motion.tr
+                  key={material._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {material.name}
                   </td>
@@ -239,22 +327,33 @@ const Supplier = () => {
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {material.available ? "available" : "unavailable"}
+                      {material.available ? "Available" : "Unavailable"}
                     </span>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Active Group Buys */}
-      <div>
-        <h2 className="text-2xl font-bold mb-6">{"activeGroupBuys"}</h2>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold mb-6">Active Group Buys</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {groupBuys.map((groupBuy) => (
-            <div key={groupBuy._id} className="bg-white rounded-lg shadow p-6">
+            <motion.div
+              key={groupBuy._id}
+              className="bg-white rounded-lg shadow p-6"
+              whileHover={{ scale: 1.04 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-semibold">
@@ -272,33 +371,33 @@ const Supplier = () => {
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {groupBuy.status}
+                  {groupBuy.status.charAt(0).toUpperCase() + groupBuy.status.slice(1)}
                 </span>
               </div>
               <div className="space-y-2">
                 <p className="text-sm">
-                  <span className="font-medium">{"pricePerUnit"}:</span> ₹
+                  <span className="font-medium">Price Per Unit:</span> ₹
                   {groupBuy.material.price}/{groupBuy.material.unit}
                 </p>
                 <p className="text-sm">
-                  <span className="font-medium">{"currentQuantity"}:</span>{" "}
+                  <span className="font-medium">Current Quantity:</span>{" "}
                   {groupBuy.currentQuantity}/{groupBuy.targetQuantity}{" "}
                   {groupBuy.material.unit}
                 </p>
                 <p className="text-sm">
-                  <span className="font-medium">{"participants"}:</span>{" "}
+                  <span className="font-medium">Participants:</span>{" "}
                   {groupBuy.vendors.length}
                 </p>
                 <p className="text-sm">
-                  <span className="font-medium">{"deadline"}:</span>{" "}
+                  <span className="font-medium">Deadline:</span>{" "}
                   {new Date(groupBuy.deadline).toLocaleDateString()}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
